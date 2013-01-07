@@ -2,6 +2,7 @@
 
 import os, pygit2, sys, zipfile, glob;
 from subprocess import Popen, PIPE, STDOUT;
+from datetime import datetime;
 from shutil import copyfile;
 import urllib2
 
@@ -46,7 +47,7 @@ class Pack:
     submodules = [];
     last_version = 0;
     #过滤全局的
-    ingore_files = ['.git', '.gitignore', '.gitmodules', '.DS_Store']
+    ingore_files = ['.git', '.gitignore', '.gitmodules', '.DS_Store', 'ver.txt']
     #特别路径过滤
     spec_ingore_files = []
 
@@ -66,9 +67,11 @@ class Pack:
 	#download the last sql
 	#self.get_last_sql();
 
-	self.update_version();
-	self.get_diff_files_list();
-	self.package_last_version();
+	if self.update_version() == True:
+            self.get_diff_files_list();
+            self.package_last_version();
+	else:
+	    print "=== this version is already exist: %s" % (os.path.join(self.dist_dir, "%s.file.txt") % self.last_version);
 
     def get_last_sql(self):
 	print "=== start download the last database sql";
@@ -101,6 +104,9 @@ class Pack:
 	self.last_version = last.name;
 
 	print "=== The last version: %s" % self.last_version;
+        
+        if os.path.isfile(os.path.join(self.dist_dir, "%s.file.txt") % self.last_version):
+            return False;
 
 	ver_txt = os.path.join(self.main_dir, "caches", "update", 'ver.txt');
 	txt = open(ver_txt, mode='w');
@@ -108,6 +114,7 @@ class Pack:
 	txt.close();
 
 	self.ver_txt = ver_txt[len(self.main_dir)+1:];
+        return True;
     
     def get_submodule_diff_files_list(self, submodule_dir, submodule, git_str):
 	diff_info = git_str[0].strip().split();
@@ -231,10 +238,11 @@ class Pack:
 	print "=== package patch zip";
 	self.files = [];
 	self._get_files(files);
-	self.files.append(self.ver_txt);
+	if self.ver_txt not in self.files:
+            self.files.append(self.ver_txt);
 	
-	zip_file = zipfile.ZipFile(os.path.join(self.dist_dir, "zqcms-patch-%s.zip") % self.last_version, mode='w', compression=zipfile.ZIP_DEFLATED);
 	filelist = open(os.path.join(self.dist_dir, "%s.file.txt") % self.last_version, mode='w');
+        zip_file = zipfile.ZipFile(os.path.join(self.dist_dir, "zqcms-patch-%s.zip") % self.last_version, mode='w', compression=zipfile.ZIP_DEFLATED);
 	for f in self.files:
 	    file_path = os.path.join(self.main_dir, f);
 	    rel_path = os.path.join("source", f);
@@ -242,7 +250,11 @@ class Pack:
 	    filelist.write(f+"\n");
         zip_file.extractall(self.dist_dir);
         zip_file.close();
-        
+        filelist.close();
+        verinfo = open(os.path.join(self.dist_dir, "verinfo.txt"), mode='a');
+        newver = "\n{0}, {1}, utf-8, 1 , V{2} 更新补丁";
+        verinfo.write(newver.format(datetime.today().strftime("%Y%m%d"), self.last_version, self.last_version));
+        verinfo.close();
 
     '''
     打包最新版本
@@ -267,5 +279,3 @@ class Pack:
 
 if __name__ == '__main__':
     package = Pack();
-    print "=== sync files to cdn";
-    execute(os.path.join(os.getcwd(), "qrsync"), "zqcms_update.json");
