@@ -2,6 +2,7 @@
 
 import os, pygit2, sys, zipfile, glob;
 from subprocess import Popen, PIPE, STDOUT;
+from shutil import copyfile;
 import urllib2
 
 subprocess_env = dict(os.environ);
@@ -49,7 +50,7 @@ class Pack:
     #特别路径过滤
     spec_ingore_files = []
 
-    #sql_url = "http://cdn.img.dbplay.com/update/sql-cmdp_cms.txt"
+    sql_url = "http://cdn.img.dbplay.com/update/sql-cmdp_cms.txt"
 
     def __init__(self, path=os.getcwd()):
 	main_dir = os.path.join(path, "zqcms");
@@ -232,9 +233,16 @@ class Pack:
 	self._get_files(files);
 	self.files.append(self.ver_txt);
 	
+	zip_file = zipfile.ZipFile(os.path.join(self.dist_dir, "zqcms-patch-%s.zip") % self.last_version, mode='w', compression=zipfile.ZIP_DEFLATED);
 	filelist = open(os.path.join(self.dist_dir, "%s.file.txt") % self.last_version, mode='w');
 	for f in self.files:
+	    file_path = os.path.join(self.main_dir, f);
+	    rel_path = os.path.join("source", f);
+	    zip_file.write(file_path, rel_path);
 	    filelist.write(f+"\n");
+        zip_file.extractall(self.dist_dir);
+        zip_file.close();
+        
 
     '''
     打包最新版本
@@ -254,7 +262,10 @@ class Pack:
 	    zip_file.write(file_path, rel_path);
 
 	zip_file.close();
+        copyfile(os.path.join(self.dist_dir, "zqcms-%s.zip") % self.last_version, os.path.join(self.dist_dir, "latest.zip"));
 	git('checkout', 'master', cwd=self.main_dir);
 
 if __name__ == '__main__':
     package = Pack();
+    print "=== sync files to cdn";
+    execute(os.path.join(os.getcwd(), "qrsync"), "zqcms_update.json");
