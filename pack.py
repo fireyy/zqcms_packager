@@ -55,7 +55,7 @@ class Pack:
 	main_dir = os.path.join(path, "zqcms");
 	self.cms_path = path;
 	self.main_dir = main_dir;
-	self.dist_dir = os.path.join(path, "python");
+	self.dist_dir = os.path.join(path, "dist");
 	data_dir = os.path.join(main_dir, "data");
 	self.repo = pygit2.Repository(main_dir);
 
