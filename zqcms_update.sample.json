@@ -1,0 +1,8 @@
+{
+	"access_key": "~access_key~",
+	"secret_key": "~secret_key~",
+	"bucket": "update",
+	"sync_dir": "update",
+	"domains": ["~domains~"],
+	"debug_level": 0
+}
