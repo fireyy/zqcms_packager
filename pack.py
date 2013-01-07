@@ -47,19 +47,15 @@ class Pack:
     #过滤全局的
     ingore_files = ['.git', '.gitignore', '.gitmodules', '.DS_Store']
     #特别路径过滤
-    spec_ingore_files = [
-	'cmdp_cms/data/common.inc.php',
-	'cmdp_cms/data/config.cache.inc.php',
-	'cmdp_cms/data/config.cache.bak.php'
-    ]
+    spec_ingore_files = []
 
-    sql_url = "http://cdn.img.dbplay.com/update/sql-cmdp_cms.txt"
+    #sql_url = "http://cdn.img.dbplay.com/update/sql-cmdp_cms.txt"
 
     def __init__(self, path=os.getcwd()):
-	main_dir = os.path.join(path, "cmdp_cms");
+	main_dir = os.path.join(path, "zqcms");
 	self.cms_path = path;
 	self.main_dir = main_dir;
-	self.dist_dir = os.path.join(path, "dist");
+	self.dist_dir = os.path.join(path, "python");
 	data_dir = os.path.join(main_dir, "data");
 	self.repo = pygit2.Repository(main_dir);
 
@@ -105,7 +101,7 @@ class Pack:
 
 	print "=== The last version: %s" % self.last_version;
 
-	ver_txt = os.path.join(self.main_dir, "data", "admin", 'ver.txt');
+	ver_txt = os.path.join(self.main_dir, "caches", "update", 'ver.txt');
 	txt = open(ver_txt, mode='w');
 	txt.write(self.last_version);
 	txt.close();
@@ -250,7 +246,7 @@ class Pack:
 	self._get_files(self.main_dir, True);
 	self.files.append(self.ver_txt);
 
-	zip_file = zipfile.ZipFile(os.path.join(self.dist_dir, "cmdp_cms-%s.zip") % self.last_version, mode='w', compression=zipfile.ZIP_DEFLATED);
+	zip_file = zipfile.ZipFile(os.path.join(self.dist_dir, "zqcms-%s.zip") % self.last_version, mode='w', compression=zipfile.ZIP_DEFLATED);
 
 	for f in self.files:
 	    file_path = os.path.join(self.main_dir, f);
