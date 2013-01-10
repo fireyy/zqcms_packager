@@ -1,0 +1,5 @@
+## 使用
+
+重命名 `config.sample` 为 `config`, 然后填写信息
+
+重命名 `zqcms_update.sample.json` 为 `zqcms_update.json`, 然后填写配置
