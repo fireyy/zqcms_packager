@@ -7,7 +7,6 @@ python pack.py
 echo "=== sync files to cdn"
 ./qrsync zqcms_update.json
 echo "=== files sync done"
-#TODO 使用qboxrsctl清理cdn的缓存
 source config
 ./qboxrsctl login $USERNAME $PADDWORD
 echo "=== refresh cdn caches"
