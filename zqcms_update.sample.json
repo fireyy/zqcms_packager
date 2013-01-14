@@ -4,5 +4,5 @@
 	"bucket": "update",
 	"sync_dir": "update",
 	"domains": ["~domains~"],
-	"debug_level": 0
+	"debug_level": 2
 }
