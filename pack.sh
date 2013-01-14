@@ -11,13 +11,13 @@ source config
 ./qboxrsctl login $USERNAME $PADDWORD
 echo "=== refresh cdn caches"
 ./qboxrsctl refresh update
-./qboxrsctl cdn/refresh $CDN_PATH/verinfo.txt
-./qboxrsctl cdn/refresh $CDN_PATH/latest.zip
+./qboxrsctl cdn/refresh update $CDN_PATH/verinfo.txt
+./qboxrsctl cdn/refresh update $CDN_PATH/latest.zip
 ZQCMS_VERSIONS=$(cat dist/source/caches/update/ver.txt)
 if [ -n "$ZQCMS_VERSIONS" ]; then
     cat "dist/$ZQCMS_VERSIONS.file.txt" | while read line
     do
-        ./qboxrsctl cdn/refresh $CDN_PATH/$line
+        ./qboxrsctl cdn/refresh update $CDN_PATH/$line
     done
 else
     echo "!!!=== ZQCMS_VERSIONS is null"
