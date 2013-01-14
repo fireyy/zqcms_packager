@@ -109,7 +109,7 @@ class Pack:
             return False;
 
 	ver_txt = os.path.join(self.main_dir, "caches", "update", 'ver.txt');
-	txt = open(ver_txt, mode='w');
+	txt = file(ver_txt, mode='w');
 	txt.write(self.last_version);
 	txt.close();
 
